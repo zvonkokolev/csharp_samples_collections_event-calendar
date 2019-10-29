@@ -16,7 +16,7 @@ Es ist ein Eventkalender zu implementieren welcher Veranstaltungen verwaltet. Ei
 
 ## Klassendiagramm
 
- ![Übersicht](./images/overview-html.png)
+ ![Übersicht](./images/class-diagram.png)
 
 Ihre Implementierung erweitert die Anwendung um die erforderlichen Klassen und Methoden.
 
