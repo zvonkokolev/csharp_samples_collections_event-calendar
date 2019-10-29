@@ -23,4 +23,4 @@ Ihre Implementierung erweitert die Anwendung um die erforderlichen Klassen und M
 Die erwartete Funktionalität der Controllermethoden entnehmen Sie den Kommentaren und den Unittests!
 
 ## Hinweise
-Die den Invitor betreffenden Funktionen werden noch nicht getestet.
+Die den `Invitor` betreffenden Funktionen werden noch nicht getestet.
