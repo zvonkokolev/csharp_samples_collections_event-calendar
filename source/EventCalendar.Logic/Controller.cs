@@ -19,7 +19,7 @@ namespace EventCalendar.Logic
 
         /// <summary>
         /// Ein Event mit dem angegebenen Titel und dem Termin wird für den Einlader angelegt.
-        /// Dder Titel muss innerhalb der Veranstaltungen eindeutig sein und das Datum darf nicht
+        /// Der Titel muss innerhalb der Veranstaltungen eindeutig sein und das Datum darf nicht
         /// in der Vergangenheit liegen.
         /// Mit dem optionalen Parameter maxParticipators kann eine Obergrenze für die Teilnehmer festgelegt
         /// werden.
