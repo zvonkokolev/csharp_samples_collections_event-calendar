@@ -3,12 +3,9 @@
   <Class Name="EventCalendar.Entities.Event">
     <Position X="7.75" Y="1.25" Width="1.75" />
     <TypeIdentifier />
-    <ShowAsAssociation>
-      <Property Name="Invitor" />
-    </ShowAsAssociation>
   </Class>
   <Class Name="EventCalendar.Entities.LimitedEvent">
-    <Position X="10.25" Y="0.5" Width="1.5" />
+    <Position X="10.25" Y="0.5" Width="3.25" />
     <TypeIdentifier />
   </Class>
   <Class Name="EventCalendar.Entities.Person">
@@ -18,9 +15,10 @@
   <Class Name="EventCalendar.Logic.Controller">
     <Position X="4.25" Y="0.75" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AEAAAAAABIAAAAAAAAAIAAAgAgAAAAAAAIAAAAAACAA=</HashCode>
+      <HashCode>AEIAAAAABIAAABAQAAAIBAQgAgAAAAIAAIAAAABQKAA=</HashCode>
       <FileName>Controller.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>
