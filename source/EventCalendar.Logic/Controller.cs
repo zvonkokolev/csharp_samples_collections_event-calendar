@@ -8,23 +8,23 @@ using static System.String;
 
 namespace EventCalendar.Logic
 {
-	public class Controller //: ICollection<T>
+	public class Controller
 	{
 		//fields
-		private readonly ICollection<Event> _events;
-		private IList<Person> _participators;
-		private Dictionary<IList<Person>, Event> _participatorsOnEvent;
+		private static int _countEventsForPerson;
+		private readonly ICollection<Event> _events = new List<Event>();
+		private readonly List<Person> _participators = new List<Person>();
+		private readonly Dictionary<Event, IList<Person>> _participatorsOnEvent
+			 = new Dictionary<Event, IList<Person>>();
 		public int EventsCount { get { return _events.Count; } }
-
 		public int Count => throw new NotImplementedException();
 
 		public bool IsReadOnly => throw new NotImplementedException();
 
 		public Controller()
 		{
-			_events = new List<Event>();
+			_countEventsForPerson = 0;
 		}
-
 		/// <summary>
 		/// Ein Event mit dem angegebenen Titel und dem Termin wird für den Einlader angelegt.
 		/// Der Titel muss innerhalb der Veranstaltungen eindeutig sein und das Datum darf nicht
@@ -49,9 +49,9 @@ namespace EventCalendar.Logic
 					isEqualTitel = true;
 				}
 			}
-			if (invitor == null || title == null || title == "" || isEqualTitel || dateTime == null || timeSpan > 0)
+			if (invitor == null || title == null || title == "" 
+				|| isEqualTitel || dateTime == null || timeSpan > 0)
 			{
-				//throw new NullReferenceException("Daten sind nicht gueltig");
 				return check;
 			}
 			Person personInvitor = new Person(invitor.LastName, invitor.FirstName, invitor.MailAddress, invitor.PhoneNumber);
@@ -89,31 +89,30 @@ namespace EventCalendar.Logic
 		public bool RegisterPersonForEvent(Person person, Event ev)
 		{
 			bool check = false;
-			if(person == null || ev == null)
+			if (person == null || ev == null)
 			{
 				return check;
 			}
-			_participators = new List<Person>
+			foreach (KeyValuePair<Event, IList<Person>> item in _participatorsOnEvent)
 			{
-				person
-			};
-			_participatorsOnEvent = new Dictionary<IList<Person>, Event>
-			{
-				{ _participators, ev }
-			};
-			check = true;
-			foreach (Person item in _participators)
-			{
-				if(item.FirstName.ToLower().Equals(person.FirstName.ToLower())
-					&& item.LastName.ToLower().Equals(person.LastName.ToLower()))
+				if (item.Key.Title == ev.Title && item.Value.Contains(person))
 				{
-					check = false;
-					break;
+					return check;
 				}
 			}
+			_participators.Add(person);
+			if (_participatorsOnEvent.Count > 0)
+			{
+				_participatorsOnEvent.Remove(ev);
+			}
+			_participatorsOnEvent.Add(ev, _participators);
+			if (_participatorsOnEvent[ev].Count < ev.MaxParticipators)
+			{
+				return check;
+			}
+			check = true;
 			return check;
 		}
-
 		/// <summary>
 		/// Person meldet sich von Veranstaltung ab
 		/// </summary>
@@ -122,25 +121,15 @@ namespace EventCalendar.Logic
 		/// <returns>War die Abmeldung erfolgreich?</returns>
 		public bool UnregisterPersonForEvent(Person person, Event ev)
 		{
-			bool check = false;
-			//foreach (Person item in _participators)
-			//{
-			//	if (item.FirstName.ToLower().Equals(person.FirstName.ToLower())
-			//		&& item.LastName.ToLower().Equals(person.LastName.ToLower()))
-			//	{
-			//		check = true;
-			//		break;
-			//	}
-			//}
-			if (person == null || ev == null || !check)
+			if (person == null || ev == null || !_participatorsOnEvent[ev].ToList<Person>().Contains(person))
 			{
 				return false;
 			}
-			_participatorsOnEvent.Remove(_participators);
-			_participators.Remove(person);
-			_participatorsOnEvent.Add(_participators, ev);
-			check = true;
-			return check;
+			else
+			{
+				_participatorsOnEvent[ev].Remove(person);
+				return  true;
+			}
 		}
 
 		/// <summary>
@@ -152,9 +141,15 @@ namespace EventCalendar.Logic
 		/// <returns>Liste der Teilnehmer oder null im Fehlerfall</returns>
 		public IList<Person> GetParticipatorsForEvent(Event ev)
 		{
-			throw new NotImplementedException();
+			List<Person> people = null;
+			if(ev == null || !_participatorsOnEvent.ContainsKey(ev))
+			{
+				return people;
+			}
+			people = _participatorsOnEvent[ev].ToList();
+			people.Sort();
+			return people as IList<Person>;
 		}
-
 		/// <summary>
 		/// Liefert alle Veranstaltungen der Person nach Datum (aufsteigend) sortiert.
 		/// </summary>
@@ -162,7 +157,20 @@ namespace EventCalendar.Logic
 		/// <returns>Liste der Veranstaltungen oder null im Fehlerfall</returns>
 		public List<Event> GetEventsForPerson(Person person)
 		{
-			throw new NotImplementedException();
+			List<Event> newEventList = new List<Event>();
+			if (person == null)
+			{
+				return null;
+			}
+			foreach (KeyValuePair<Event, IList<Person>> titel in _participatorsOnEvent)
+			{
+				if (titel.Value.Contains(person))
+				{
+					newEventList.Add(titel.Key);
+				}
+			}
+			newEventList.Sort();
+			return newEventList;
 		}
 
 		/// <summary>
@@ -172,78 +180,18 @@ namespace EventCalendar.Logic
 		/// <returns>Anzahl oder 0 im Fehlerfall</returns>
 		public int CountEventsForPerson(Person participator)
 		{
-			throw new NotImplementedException();
+			if (participator == null)
+			{
+				return 0;
+			}
+			foreach (KeyValuePair<Event, IList<Person>> titel in _participatorsOnEvent)
+			{
+				if (titel.Value.Contains(participator))
+				{
+					_countEventsForPerson++;
+				}
+			}
+			return _countEventsForPerson;
 		}
-		// ICollections begin----------------------------
-		//public void Add(T item)
-		//{
-		//	throw new NotImplementedException();
-		//}
-
-		//public void Clear()
-		//{
-		//	throw new NotImplementedException();
-		//}
-
-		//public bool Contains(T item)
-		//{
-		//	throw new NotImplementedException();
-		//}
-
-		//public void CopyTo(T[] array, int arrayIndex)
-		//{
-		//	throw new NotImplementedException();
-		//}
-
-		//public bool Remove(T item)
-		//{
-		//	throw new NotImplementedException();
-		//}
-
-		//public IEnumerator<T> GetEnumerator()
-		//{
-		//	throw new NotImplementedException();
-		//}
-
-		//IEnumerator IEnumerable.GetEnumerator()
-		//{
-		//	throw new NotImplementedException();
-		//}
-		//--------------------------------------
-		//public void Add(Event item)
-		//{
-		//	throw new NotImplementedException();
-		//}
-
-		//public bool Contains(Event item)
-		//{
-		//	throw new NotImplementedException();
-		//}
-
-		//public void CopyTo(Event[] array, int arrayIndex)
-		//{
-		//	throw new NotImplementedException();
-		//}
-
-		//public bool Remove(Event item)
-		//{
-		//	throw new NotImplementedException();
-		//}
-
-		//IEnumerator<Event> IEnumerable<Event>.GetEnumerator()
-		//{
-		//	throw new NotImplementedException();
-		//}
-
-		//public void Clear()
-		//{
-		//	throw new NotImplementedException();
-		//}
-
-		//public IEnumerator GetEnumerator()
-		//{
-		//	throw new NotImplementedException();
-		//}
-		//ICollection end------------------------
 	}
 }

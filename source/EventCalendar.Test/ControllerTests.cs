@@ -172,7 +172,8 @@ namespace EventCalendar.Test
             // Act
             int eventsCounterParticipator1 = controller.CountEventsForPerson(participator1);
             // Assert
-            Assert.AreEqual(1, eventsCounterParticipator1);
+            
+	Assert.AreEqual(1, eventsCounterParticipator1);
         }
 
         [TestMethod()]
