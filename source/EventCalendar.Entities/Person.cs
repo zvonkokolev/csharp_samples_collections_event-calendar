@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 
 namespace EventCalendar.Entities
 {
@@ -30,16 +29,14 @@ namespace EventCalendar.Entities
 			}
 		}
 		private readonly bool _isInvitor = false;
-		private readonly List<int> _personCounter; 
 		public string LastName { get; }
 		public string FirstName { get; }
 		public string MailAddress { get; set; }
 		public string PhoneNumber { get; set; }
-
+		public int EventCounter { get; set; }
 		//constructor
 		public Person()
 		{
-			_personCounter = new List<int>();
 		}
 		public Person(string lastName, string firstName)
 		{
@@ -49,7 +46,6 @@ namespace EventCalendar.Entities
 			}
 			LastName = lastName;
 			FirstName = firstName;
-			_personCounter = new List<int>();
 		}
 		public Person(string lastNameX, string firstNameX, string email = "0", string phoneNumber = "0")
 		{
@@ -84,14 +80,25 @@ namespace EventCalendar.Entities
 				throw new ArgumentException("Objekt ist kein Person");
 			}
 			Person otherPerson = (Person)obj;
-			return String.Compare(this.FirstName, otherPerson.FirstName);
+			if (EventCounter > otherPerson.EventCounter) return -1;
+			if(EventCounter < otherPerson.EventCounter) return 1;
+			else return 0;
 		}
 		public static IComparer SortFirstName(List<Person> people)
 		{
+			if (people is null)
+			{
+				throw new ArgumentNullException(nameof(people));
+			}
 			return (IComparer) new SortFirstNameHelper();
 		}
 		public static IComparer SortLastName(List<Person> people)
 		{
+			if (people is null)
+			{
+				throw new ArgumentNullException(nameof(people));
+			}
+
 			return (IComparer) new SortLastNameHelper();
 		}
 	}

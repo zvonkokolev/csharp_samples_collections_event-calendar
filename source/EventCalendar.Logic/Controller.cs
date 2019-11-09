@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Tracing;
 using System.Linq;
 using EventCalendar.Entities;
-using static System.String;
 
 namespace EventCalendar.Logic
 {
@@ -103,11 +100,16 @@ namespace EventCalendar.Logic
 				}
 			}
 			_participators.Add(person);
-			if (_participatorsOnEvent.Count > 0)
-			{  //if list empty, do not remove
-				_participatorsOnEvent.Remove(ev);
+			List<Person> temporary;
+			if (!_participatorsOnEvent.ContainsKey(ev))
+			{
+				temporary = new List<Person>();
+				_participatorsOnEvent.Add(ev, temporary);
 			}
-			_participatorsOnEvent.Add(ev, _participators);
+			temporary = _participatorsOnEvent[ev].ToList();
+			temporary.Add(person);
+			_participatorsOnEvent.Remove(ev);
+			_participatorsOnEvent.Add(ev, temporary);
 			Count++;
 			if (ev.MaxParticipators > 0 && ev.MaxParticipators <= Count)
 			{  //check if limited
@@ -118,6 +120,7 @@ namespace EventCalendar.Logic
 				IsReadOnly = false;
 			}
 			check = true;
+			person.EventCounter = _countEventsForPerson; //<----
 			return check;
 		}
 		/// <summary>
@@ -151,13 +154,19 @@ namespace EventCalendar.Logic
 		/// <returns>Liste der Teilnehmer oder null im Fehlerfall</returns>
 		public IList<Person> GetParticipatorsForEvent(Event ev)
 		{
-			List<Person> people;
-			if(ev == null || !(ev is Event) || !_participatorsOnEvent.ContainsKey(ev))
+			_ = new List<Person>();
+			if (ev == null || !(ev is Event))
 			{
 				return null;
 			}
-			people = _participatorsOnEvent[ev].ToList();
+			if(_participatorsOnEvent.Count == 0)
+			{
+				return null;
+			}
+			List<Person> people = _participatorsOnEvent[ev].ToList();
+
 			people.Sort();
+			Person.SortFirstName(people);
 			return people; // as IList<Person>;
 		}
 		/// <summary>
