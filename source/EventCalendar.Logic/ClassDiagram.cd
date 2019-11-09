@@ -1,24 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="EventCalendar.Entities.Event">
-    <Position X="7.75" Y="1.25" Width="1.75" />
+    <Position X="7.5" Y="2.5" Width="1.75" />
     <TypeIdentifier />
   </Class>
   <Class Name="EventCalendar.Entities.LimitedEvent">
-    <Position X="10.25" Y="0.5" Width="3.25" />
+    <Position X="7.5" Y="0.75" Width="3.25" />
     <TypeIdentifier />
   </Class>
   <Class Name="EventCalendar.Entities.Person">
-    <Position X="12" Y="2.25" Width="1.5" />
+    <Position X="10.25" Y="2" Width="1.5" />
     <TypeIdentifier />
   </Class>
   <Class Name="EventCalendar.Logic.Controller">
     <Position X="4.25" Y="0.75" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AEIAAAAABIAAABAQAAAIBAQgAgAAAAIAAIAAAABQKAA=</HashCode>
+      <HashCode>AEAAAAAABIAAAAAQgAAIAAQgAgAAAAAAAIAQAAAACCA=</HashCode>
       <FileName>Controller.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" />
   </Class>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>

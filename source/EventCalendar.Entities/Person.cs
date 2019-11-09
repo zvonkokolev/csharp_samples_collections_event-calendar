@@ -11,7 +11,7 @@ namespace EventCalendar.Entities
 	/// </summary>
 	public class Person : IComparable
 	{
-		private class SortFirstNameHelper : IComparer
+		public class SortFirstNameHelper : IComparer
 		{
 			public int Compare(object x, object y)
 			{
@@ -20,13 +20,13 @@ namespace EventCalendar.Entities
 				return String.Compare(leftPerson.FirstName, rightPerson.FirstName);
 			}
 		}
-		private class SortLastNameHelper : IComparer
+		public class SortLastNameHelper : IComparer
 		{
 			public int Compare(object x, object y)
 			{
 				Person leftPerson = (Person)x;
 				Person rightPerson = (Person)y;
-				return String.Compare(leftPerson.LastName, rightPerson.LastName);
+				return String.Compare(rightPerson.FirstName, leftPerson.FirstName);
 			}
 		}
 		private readonly bool _isInvitor = false;
@@ -79,16 +79,12 @@ namespace EventCalendar.Entities
 
 		public int CompareTo(object obj)
 		{
+			if(obj == null || !(obj is Person))
+			{
+				throw new ArgumentException("Objekt ist kein Person");
+			}
 			Person otherPerson = (Person)obj;
-			if(this._personCounter.Count < otherPerson._personCounter.Count)
-			{
-				return -1;
-			}
-			if (this._personCounter.Count < otherPerson._personCounter.Count)
-			{
-				return 1;
-			}
-			else return 0;
+			return String.Compare(this.FirstName, otherPerson.FirstName);
 		}
 		public static IComparer SortFirstName(List<Person> people)
 		{
@@ -96,7 +92,7 @@ namespace EventCalendar.Entities
 		}
 		public static IComparer SortLastName(List<Person> people)
 		{
-			return (IComparer)new SortLastNameHelper();
+			return (IComparer) new SortLastNameHelper();
 		}
 	}
 }

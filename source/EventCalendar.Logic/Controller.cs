@@ -17,9 +17,9 @@ namespace EventCalendar.Logic
 		private readonly Dictionary<Event, IList<Person>> _participatorsOnEvent
 			 = new Dictionary<Event, IList<Person>>();
 		public int EventsCount { get { return _events.Count; } }
-		public int Count => throw new NotImplementedException();
+		public int Count { get; set; }
 
-		public bool IsReadOnly => throw new NotImplementedException();
+		public bool IsReadOnly { get; set; }
 
 		public Controller()
 		{
@@ -58,6 +58,7 @@ namespace EventCalendar.Logic
 			Event newEvent = new Event(personInvitor, title, dateTime, maxParticipators);
 			_events.Add(newEvent);
 			check = true;
+
 			return check;
 		}
 		/// <summary>
@@ -89,12 +90,13 @@ namespace EventCalendar.Logic
 		public bool RegisterPersonForEvent(Person person, Event ev)
 		{
 			bool check = false;
+			if (IsReadOnly) return check;	//bodyguard
 			if (person == null || ev == null)
 			{
 				return check;
 			}
 			foreach (KeyValuePair<Event, IList<Person>> item in _participatorsOnEvent)
-			{
+			{	//check if same person two times for one event
 				if (item.Key.Title == ev.Title && item.Value.Contains(person))
 				{
 					return check;
@@ -102,13 +104,18 @@ namespace EventCalendar.Logic
 			}
 			_participators.Add(person);
 			if (_participatorsOnEvent.Count > 0)
-			{
+			{  //if list empty, do not remove
 				_participatorsOnEvent.Remove(ev);
 			}
 			_participatorsOnEvent.Add(ev, _participators);
-			if (_participatorsOnEvent[ev].Count < ev.MaxParticipators)
+			Count++;
+			if (ev.MaxParticipators > 0 && ev.MaxParticipators <= Count)
+			{  //check if limited
+				IsReadOnly = true;
+			}
+			else
 			{
-				return check;
+				IsReadOnly = false;
 			}
 			check = true;
 			return check;
@@ -121,13 +128,16 @@ namespace EventCalendar.Logic
 		/// <returns>War die Abmeldung erfolgreich?</returns>
 		public bool UnregisterPersonForEvent(Person person, Event ev)
 		{
-			if (person == null || ev == null || !_participatorsOnEvent[ev].ToList<Person>().Contains(person))
+			if (person == null || ev == null || !_participatorsOnEvent[ev].Contains(person))
 			{
 				return false;
 			}
 			else
 			{
+				_participators.Remove(person);
 				_participatorsOnEvent[ev].Remove(person);
+				Count--;
+				IsReadOnly = false;
 				return  true;
 			}
 		}
@@ -141,14 +151,14 @@ namespace EventCalendar.Logic
 		/// <returns>Liste der Teilnehmer oder null im Fehlerfall</returns>
 		public IList<Person> GetParticipatorsForEvent(Event ev)
 		{
-			List<Person> people = null;
-			if(ev == null || !_participatorsOnEvent.ContainsKey(ev))
+			List<Person> people;
+			if(ev == null || !(ev is Event) || !_participatorsOnEvent.ContainsKey(ev))
 			{
-				return people;
+				return null;
 			}
 			people = _participatorsOnEvent[ev].ToList();
 			people.Sort();
-			return people as IList<Person>;
+			return people; // as IList<Person>;
 		}
 		/// <summary>
 		/// Liefert alle Veranstaltungen der Person nach Datum (aufsteigend) sortiert.

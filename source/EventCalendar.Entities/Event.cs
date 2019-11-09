@@ -71,15 +71,15 @@ namespace EventCalendar.Entities
 		}
 		public static IComparer SortTitleAscending()
 		{
-			return (IComparer)new SortOnTitleAscendingHelper();
+			return (IComparer) new SortOnTitleAscendingHelper();
 		}
 		public static IComparer SortTitleDescending()
 		{
-			return (IComparer)new SortOnTitleDescendingHelper();
+			return (IComparer) new SortOnTitleDescendingHelper();
 		}
 		public static IComparer SortDatumDescending(List<Event> events)
 		{
-			return (IComparer)new SortOnDatumDescendingHelper();
+			return (IComparer) new SortOnDatumDescendingHelper();
 		}
 	}
 }
