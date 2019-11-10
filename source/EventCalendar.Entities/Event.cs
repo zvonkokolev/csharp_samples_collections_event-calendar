@@ -6,25 +6,7 @@ namespace EventCalendar.Entities
 {
 	public class Event : IComparable
 	{
-		private class SortOnTitleAscendingHelper : IComparer
-		{
-			public int Compare(object x, object y)
-			{
-				Event a = (Event)x;
-				Event b = (Event)y;
-				return String.Compare(a.Title, b.Title);
-			}
-		}
-		private class SortOnTitleDescendingHelper : IComparer
-		{
-			public int Compare(object x, object y)
-			{
-				Event a = (Event)x;
-				Event b = (Event)y;
-				return String.Compare(b.Title, a.Title);
-			}
-		}
-		private class SortOnDatumDescendingHelper : IComparer
+		public class SortOnDatumDescendingHelper : IComparer
 		{
 			public int Compare(object x, object y)
 			{
@@ -60,7 +42,7 @@ namespace EventCalendar.Entities
 		public Person Person { get => _person; set => _person = value; }
 		public int MaxParticipators { get => _maxParticipators; set => _maxParticipators = value; }
 
-		int IComparable.CompareTo(object obj)
+		public int CompareTo(object obj)
 		{
 			if (obj == null || !(obj is Event))
 			{
@@ -69,22 +51,13 @@ namespace EventCalendar.Entities
 			Event other = (Event)obj;
 			return DateTime.Compare(MyDateTime, other.MyDateTime);
 		}
-		public static IComparer SortTitleAscending()
-		{
-			return (IComparer) new SortOnTitleAscendingHelper();
-		}
-		public static IComparer SortTitleDescending()
-		{
-			return (IComparer) new SortOnTitleDescendingHelper();
-		}
 		public static IComparer SortDatumDescending(List<Event> events)
 		{
 			if (events is null)
 			{
 				throw new ArgumentNullException(nameof(events));
 			}
-
-			return (IComparer) new SortOnDatumDescendingHelper();
+			return (IComparer)new SortOnDatumDescendingHelper();
 		}
 	}
 }

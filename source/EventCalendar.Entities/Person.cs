@@ -8,7 +8,7 @@ namespace EventCalendar.Entities
 	/// Person kann sowohl zu einer Veranstaltung einladen,
 	/// als auch an Veranstaltungen teilnehmen
 	/// </summary>
-	public class Person : IComparable<Person>
+	public class Person : IComparable
 	{
 		public class SortFirstNameHelper : IComparer
 		{
@@ -33,7 +33,7 @@ namespace EventCalendar.Entities
 		public string FirstName { get; }
 		public string MailAddress { get; set; }
 		public string PhoneNumber { get; set; }
-		public int EventCounter { get; set; }
+		public int EventCounter { get; set; } = 0;
 		//constructor
 		public Person()
 		{
@@ -46,6 +46,7 @@ namespace EventCalendar.Entities
 			}
 			LastName = lastName;
 			FirstName = firstName;
+			EventCounter++;
 		}
 		public Person(string lastNameX, string firstNameX, string email = "0", string phoneNumber = "0")
 		{
@@ -82,35 +83,24 @@ namespace EventCalendar.Entities
 			}
 			return (IComparer) new SortFirstNameHelper();
 		}
-		public static IComparer SortLastName(List<Person> people)
+		public static IComparer SortLastName(Person people)
 		{
 			if (people is null)
 			{
-				throw new ArgumentNullException(nameof(people));
+				throw new ArgumentNullException();
 			}
 
 			return (IComparer) new SortLastNameHelper();
 		}
-		//int IComparable.CompareTo(object obj)
-		//{
-		//	if (obj == null || !(obj is Person))
-		//	{
-		//		throw new ArgumentException("Objekt ist kein Person");
-		//	}
-		//	Person otherPerson = (Person)obj;
-		//	if (EventCounter > otherPerson.EventCounter) return 1;
-		//	if (EventCounter < otherPerson.EventCounter) return -1;
-		//	else return 0;
-		//}
-		public int CompareTo(Person other)
+		int IComparable.CompareTo(object obj)
 		{
-			if (other == null || !(other is Person))
+			if (obj == null || !(obj is Person))
 			{
 				throw new ArgumentException("Objekt ist kein Person");
 			}
-			Person otherPerson = (Person)other;
-			if (EventCounter > otherPerson.EventCounter) return 1;
-			if (EventCounter < otherPerson.EventCounter) return -1;
+			Person otherPerson = (Person)obj;
+			if (EventCounter > otherPerson.EventCounter) return -1;
+			if (EventCounter < otherPerson.EventCounter) return 1;
 			else return 0;
 		}
 	}

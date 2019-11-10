@@ -9,11 +9,13 @@ namespace EventCalendar.Logic
 	public class Controller : ICollection
 	{
 		//fields
+		private bool _isLimitedEvent;
 		private static int _countEventsForPerson;
-		private readonly ICollection<Event> _events = new List<Event>();
+		private readonly List<Event> _events = new List<Event>();
 		private readonly List<Person> _participators = new List<Person>();
-		private readonly Dictionary<Event, IList<Person>> _participatorsOnEvent
-			 = new Dictionary<Event, IList<Person>>();
+		private readonly Dictionary<Event, List<Person>> _participatorsOnEvent
+			 = new Dictionary<Event, List<Person>>();
+		private readonly Dictionary<string, int> _partyCountPerPerson = new Dictionary<string, int>();
 		public int EventsCount { get { return _events.Count; } }
 		public int Count { get; set; }
 
@@ -22,6 +24,18 @@ namespace EventCalendar.Logic
 		public bool IsSynchronized => throw new NotImplementedException();
 
 		public object SyncRoot => throw new NotImplementedException();
+
+		public bool IsLimitedEvent
+		{
+			get
+			{
+				return _isLimitedEvent;
+			}
+			set
+			{
+				_isLimitedEvent = value;
+			}
+		}
 
 		public Controller()
 		{
@@ -92,12 +106,12 @@ namespace EventCalendar.Logic
 		public bool RegisterPersonForEvent(Person person, Event ev)
 		{
 			bool check = false;
-			if (IsReadOnly) return check;	//bodyguard
+			if (IsLimitedEvent) return check;	//bodyguard
 			if (person == null || ev == null)
 			{
 				return check;
 			}
-			foreach (KeyValuePair<Event, IList<Person>> item in _participatorsOnEvent)
+			foreach (KeyValuePair<Event, List<Person>> item in _participatorsOnEvent)
 			{	//check if same person two times for one event
 				if (item.Key.Title == ev.Title && item.Value.Contains(person))
 				{
@@ -118,14 +132,14 @@ namespace EventCalendar.Logic
 			Count++;
 			if (ev.MaxParticipators > 0 && ev.MaxParticipators <= Count)
 			{  //check if limited
-				IsReadOnly = true;
+				IsLimitedEvent = true;
 			}
 			else
 			{
-				IsReadOnly = false;
+				IsLimitedEvent = false;
 			}
+			//_partyCountPerPerson.Add(person.FirstName, CountEventsForPerson(person));
 			check = true;
-			person.EventCounter = _countEventsForPerson; //<----
 			return check;
 		}
 		/// <summary>
@@ -145,7 +159,7 @@ namespace EventCalendar.Logic
 				_participators.Remove(person);
 				_participatorsOnEvent[ev].Remove(person);
 				Count--;
-				IsReadOnly = false;
+				IsLimitedEvent = false;
 				return  true;
 			}
 		}
@@ -157,7 +171,7 @@ namespace EventCalendar.Logic
 		/// </summary>
 		/// <param name="ev"></param>
 		/// <returns>Liste der Teilnehmer oder null im Fehlerfall</returns>
-		public IList<Person> GetParticipatorsForEvent(Event ev)
+		public List<Person> GetParticipatorsForEvent(Event ev)
 		{
 			List<Person> people = new List<Person>();
 			if (ev == null || !(ev is Event))
@@ -172,10 +186,45 @@ namespace EventCalendar.Logic
 			{
 				return people;
 			}
-			people = _participatorsOnEvent[ev].ToList<Person>();
-			people.Sort();
-			Person.SortFirstName(people);
-			return people; // as IList<Person>;
+			people = _participatorsOnEvent[ev].ToList();
+			bool change;
+			do
+			{
+				change = false;
+				for (int i = 0; i < people.Count - 1; i++)
+				{
+					if (!(people[i].EventCounter is IComparable left) || !(people[i + 1].EventCounter is IComparable right))
+					{
+						throw new Exception("Objekte sind nicht IMyCompareable");
+					}
+					if (left.CompareTo(right) > 0)
+					{
+						var tmp = people[i + 1];
+						people[i + 1] = people[i];
+						people[i] = tmp;
+						change = true;
+					}
+					else
+					{
+						if (!(people[i].LastName is IComparable leftName) || !(people[i + 1].LastName is IComparable rightName))
+						{
+							throw new Exception("Objekte sind nicht IMyCompareable");
+						}
+						if (leftName.CompareTo(rightName) > 0)
+						{
+							var tmp = people[i + 1];
+							people[i + 1] = people[i];
+							people[i] = tmp;
+							change = true;
+						}
+					}
+				}
+			} while (change == true);
+
+			//var items = from pair in _participatorsOnEvent orderby pair.Value ascending select pair;
+			//people.Sort();
+			//MySort.Sort(people);
+			return people;
 		}
 		/// <summary>
 		/// Liefert alle Veranstaltungen der Person nach Datum (aufsteigend) sortiert.
@@ -189,7 +238,7 @@ namespace EventCalendar.Logic
 			{
 				return null;
 			}
-			foreach (KeyValuePair<Event, IList<Person>> titel in _participatorsOnEvent)
+			foreach (KeyValuePair<Event, List<Person>> titel in _participatorsOnEvent)
 			{
 				if (titel.Value.Contains(person))
 				{
@@ -197,6 +246,9 @@ namespace EventCalendar.Logic
 				}
 			}
 			newEventList.Sort();
+			//newEventList = _participatorsOnEvent.Keys.ToList();
+			//newEventList.OrderBy(i => i.MyDateTime);
+			//newEventList.OrderByDescending(i => i.MyDateTime);
 			return newEventList;
 		}
 
@@ -211,7 +263,7 @@ namespace EventCalendar.Logic
 			{
 				return 0;
 			}
-			foreach (KeyValuePair<Event, IList<Person>> titel in _participatorsOnEvent)
+			foreach (KeyValuePair<Event, List<Person>> titel in _participatorsOnEvent)
 			{
 				if (titel.Value.Contains(participator))
 				{
@@ -225,13 +277,9 @@ namespace EventCalendar.Logic
 			throw new NotImplementedException();
 		}
 
-		IEnumerator IEnumerable.GetEnumerator()
+		public IEnumerator GetEnumerator()
 		{
-			return (IEnumerator)GetEnumerator();
-		}
-		public MyEnumerator GetEnumerator()
-		{
-			return new MyEnumerator(_participators);
+			throw new NotImplementedException();
 		}
 	}
 }

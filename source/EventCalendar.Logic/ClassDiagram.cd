@@ -2,6 +2,14 @@
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="EventCalendar.Entities.Event">
     <Position X="7.5" Y="2.5" Width="1.75" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="EventCalendar.Entities.Event.SortOnDatumDescendingHelper" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+    </NestedTypes>
     <TypeIdentifier />
   </Class>
   <Class Name="EventCalendar.Entities.LimitedEvent">
@@ -10,14 +18,23 @@
   </Class>
   <Class Name="EventCalendar.Entities.Person">
     <Position X="10.25" Y="2" Width="1.5" />
+    <NestedTypes>
+      <Class Name="EventCalendar.Entities.Person.SortFirstNameHelper" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+      <Class Name="EventCalendar.Entities.Person.SortLastNameHelper" Collapsed="true">
+        <TypeIdentifier />
+      </Class>
+    </NestedTypes>
     <TypeIdentifier />
   </Class>
   <Class Name="EventCalendar.Logic.Controller">
     <Position X="4.25" Y="0.75" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AEAAAAAABIAAAAAQgAAIAAQgAgAAAAAAAIAQAAAACCA=</HashCode>
+      <HashCode>AUAAAAAABISAABAQgAAIEAQgAgAAAAAAAIAQAAAAKCA=</HashCode>
       <FileName>Controller.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>
