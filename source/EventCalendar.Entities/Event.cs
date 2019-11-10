@@ -60,7 +60,7 @@ namespace EventCalendar.Entities
 		public Person Person { get => _person; set => _person = value; }
 		public int MaxParticipators { get => _maxParticipators; set => _maxParticipators = value; }
 
-		public int CompareTo(object obj)
+		int IComparable.CompareTo(object obj)
 		{
 			if (obj == null || !(obj is Event))
 			{
@@ -79,6 +79,11 @@ namespace EventCalendar.Entities
 		}
 		public static IComparer SortDatumDescending(List<Event> events)
 		{
+			if (events is null)
+			{
+				throw new ArgumentNullException(nameof(events));
+			}
+
 			return (IComparer) new SortOnDatumDescendingHelper();
 		}
 	}

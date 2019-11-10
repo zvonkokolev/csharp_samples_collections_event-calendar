@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using EventCalendar.Entities;
 
 namespace EventCalendar.Logic
 {
-	public class Controller
+	public class Controller : ICollection
 	{
 		//fields
 		private static int _countEventsForPerson;
@@ -17,6 +18,10 @@ namespace EventCalendar.Logic
 		public int Count { get; set; }
 
 		public bool IsReadOnly { get; set; }
+
+		public bool IsSynchronized => throw new NotImplementedException();
+
+		public object SyncRoot => throw new NotImplementedException();
 
 		public Controller()
 		{
@@ -154,17 +159,20 @@ namespace EventCalendar.Logic
 		/// <returns>Liste der Teilnehmer oder null im Fehlerfall</returns>
 		public IList<Person> GetParticipatorsForEvent(Event ev)
 		{
-			_ = new List<Person>();
+			List<Person> people = new List<Person>();
 			if (ev == null || !(ev is Event))
 			{
 				return null;
 			}
 			if(_participatorsOnEvent.Count == 0)
 			{
-				return null;
+				return people;
 			}
-			List<Person> people = _participatorsOnEvent[ev].ToList();
-
+			if(_participatorsOnEvent[ev].ToList<Person>().Count == 0)
+			{
+				return people;
+			}
+			people = _participatorsOnEvent[ev].ToList<Person>();
 			people.Sort();
 			Person.SortFirstName(people);
 			return people; // as IList<Person>;
@@ -211,6 +219,19 @@ namespace EventCalendar.Logic
 				}
 			}
 			return _countEventsForPerson;
+		}
+		public void CopyTo(Array array, int index)
+		{
+			throw new NotImplementedException();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return (IEnumerator)GetEnumerator();
+		}
+		public MyEnumerator GetEnumerator()
+		{
+			return new MyEnumerator(_participators);
 		}
 	}
 }

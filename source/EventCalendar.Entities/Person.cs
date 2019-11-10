@@ -8,7 +8,7 @@ namespace EventCalendar.Entities
 	/// Person kann sowohl zu einer Veranstaltung einladen,
 	/// als auch an Veranstaltungen teilnehmen
 	/// </summary>
-	public class Person : IComparable
+	public class Person : IComparable<Person>
 	{
 		public class SortFirstNameHelper : IComparer
 		{
@@ -73,17 +73,7 @@ namespace EventCalendar.Entities
 			return $"{LastName} {FirstName} {MailAddress} {PhoneNumber}";
 		}
 
-		public int CompareTo(object obj)
-		{
-			if(obj == null || !(obj is Person))
-			{
-				throw new ArgumentException("Objekt ist kein Person");
-			}
-			Person otherPerson = (Person)obj;
-			if (EventCounter > otherPerson.EventCounter) return -1;
-			if(EventCounter < otherPerson.EventCounter) return 1;
-			else return 0;
-		}
+
 		public static IComparer SortFirstName(List<Person> people)
 		{
 			if (people is null)
@@ -100,6 +90,28 @@ namespace EventCalendar.Entities
 			}
 
 			return (IComparer) new SortLastNameHelper();
+		}
+		//int IComparable.CompareTo(object obj)
+		//{
+		//	if (obj == null || !(obj is Person))
+		//	{
+		//		throw new ArgumentException("Objekt ist kein Person");
+		//	}
+		//	Person otherPerson = (Person)obj;
+		//	if (EventCounter > otherPerson.EventCounter) return 1;
+		//	if (EventCounter < otherPerson.EventCounter) return -1;
+		//	else return 0;
+		//}
+		public int CompareTo(Person other)
+		{
+			if (other == null || !(other is Person))
+			{
+				throw new ArgumentException("Objekt ist kein Person");
+			}
+			Person otherPerson = (Person)other;
+			if (EventCounter > otherPerson.EventCounter) return 1;
+			if (EventCounter < otherPerson.EventCounter) return -1;
+			else return 0;
 		}
 	}
 }
