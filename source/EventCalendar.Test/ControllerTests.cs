@@ -257,7 +257,7 @@ namespace EventCalendar.Test
 			controller.RegisterPersonForEvent(participator2, ev1);
 			controller.RegisterPersonForEvent(participator1, ev2);
 			// Act
-			var people = controller.GetParticipatorsForEvent(ev1);
+			var people = controller.GetParticipatorsForEvent(ev1);	//ev2 ist nicht kreiert
 			// Assert
 			Assert.AreSame(participator1, people[0]);
 			Assert.AreSame(participator2, people[1]);

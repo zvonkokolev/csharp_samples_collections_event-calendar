@@ -33,7 +33,7 @@ namespace EventCalendar.Entities
 		public string FirstName { get; }
 		public string MailAddress { get; set; }
 		public string PhoneNumber { get; set; }
-		public int EventCounter { get; set; } = 0;
+		public int EventCounter { get; set; }
 		//constructor
 		public Person()
 		{
@@ -46,7 +46,7 @@ namespace EventCalendar.Entities
 			}
 			LastName = lastName;
 			FirstName = firstName;
-			EventCounter++;
+			//EventCounter++;
 		}
 		public Person(string lastNameX, string firstNameX, string email = "0", string phoneNumber = "0")
 		{
@@ -92,16 +92,21 @@ namespace EventCalendar.Entities
 
 			return (IComparer) new SortLastNameHelper();
 		}
-		int IComparable.CompareTo(object obj)
+
+		public int CompareTo(object obj)
 		{
-			if (obj == null || !(obj is Person))
-			{
-				throw new ArgumentException("Objekt ist kein Person");
-			}
-			Person otherPerson = (Person)obj;
-			if (EventCounter > otherPerson.EventCounter) return -1;
-			if (EventCounter < otherPerson.EventCounter) return 1;
-			else return 0;
+			throw new NotImplementedException();
 		}
+		//int IComparable.CompareTo(object obj)
+		//{
+		//	if (obj == null || !(obj is Person))
+		//	{
+		//		throw new ArgumentException("Objekt ist kein Person");
+		//	}
+		//	Person otherPerson = (Person)obj;
+		//	if (EventCounter > otherPerson.EventCounter) return -1;
+		//	if (EventCounter < otherPerson.EventCounter) return 1;
+		//	else return 0;
+		//}
 	}
 }

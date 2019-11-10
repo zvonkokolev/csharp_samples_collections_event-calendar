@@ -15,7 +15,6 @@ namespace EventCalendar.Logic
 		private readonly List<Person> _participators = new List<Person>();
 		private readonly Dictionary<Event, List<Person>> _participatorsOnEvent
 			 = new Dictionary<Event, List<Person>>();
-		private readonly Dictionary<string, int> _partyCountPerPerson = new Dictionary<string, int>();
 		public int EventsCount { get { return _events.Count; } }
 		public int Count { get; set; }
 
@@ -74,7 +73,6 @@ namespace EventCalendar.Logic
 			Event newEvent = new Event(personInvitor, title, dateTime, maxParticipators);
 			_events.Add(newEvent);
 			check = true;
-
 			return check;
 		}
 		/// <summary>
@@ -85,6 +83,10 @@ namespace EventCalendar.Logic
 		public Event GetEvent(string title)
 		{
 			Event result = null;
+			if (title == null)
+			{
+				return result;
+			}
 			foreach (Event ev in _events)
 			{
 				if (ev.Title.Equals(title))
@@ -138,7 +140,7 @@ namespace EventCalendar.Logic
 			{
 				IsLimitedEvent = false;
 			}
-			//_partyCountPerPerson.Add(person.FirstName, CountEventsForPerson(person));
+			person.EventCounter++;
 			check = true;
 			return check;
 		}
@@ -159,6 +161,7 @@ namespace EventCalendar.Logic
 				_participators.Remove(person);
 				_participatorsOnEvent[ev].Remove(person);
 				Count--;
+				person.EventCounter--;
 				IsLimitedEvent = false;
 				return  true;
 			}
@@ -193,7 +196,8 @@ namespace EventCalendar.Logic
 				change = false;
 				for (int i = 0; i < people.Count - 1; i++)
 				{
-					if (!(people[i].EventCounter is IComparable left) || !(people[i + 1].EventCounter is IComparable right))
+					//if (!(people[i].EventCounter is IComparable left) || !(people[i + 1].EventCounter is IComparable right))
+					if (!( CountEventsForPerson(people[i]) is IComparable left) || !(CountEventsForPerson(people[i + 1]) is IComparable right))
 					{
 						throw new Exception("Objekte sind nicht IMyCompareable");
 					}
@@ -206,7 +210,7 @@ namespace EventCalendar.Logic
 					}
 					else
 					{
-						if (!(people[i].LastName is IComparable leftName) || !(people[i + 1].LastName is IComparable rightName))
+						if (!(people[i].FirstName is IComparable leftName) || !(people[i + 1].FirstName is IComparable rightName))
 						{
 							throw new Exception("Objekte sind nicht IMyCompareable");
 						}
@@ -265,9 +269,12 @@ namespace EventCalendar.Logic
 			}
 			foreach (KeyValuePair<Event, List<Person>> titel in _participatorsOnEvent)
 			{
-				if (titel.Value.Contains(participator))
+				for (int i = 0; i < titel.Value.ToList().Count; i++)
 				{
-					_countEventsForPerson++;
+					if (titel.Value.ToList()[i].FirstName.Equals(participator.FirstName))
+					{
+						_countEventsForPerson++;
+					}
 				}
 			}
 			return _countEventsForPerson;
