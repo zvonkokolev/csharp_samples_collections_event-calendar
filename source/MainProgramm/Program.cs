@@ -16,6 +16,12 @@ namespace MainProgramm
 			controller.CreateEvent(invitor, "Second Event", DateTime.Now.AddDays(2));
 			Event ev1 = controller.GetEvent("First Event");
 			Event ev2 = controller.GetEvent("Second Event");
+			Event ev3 = controller.GetEvent("Third Event");
+			Console.WriteLine($"Event <{ev1.Title}> Nr.1");
+			Console.WriteLine($"Event <{ev2.Title}> Nr.2");
+				if (ev3 == null)
+					Console.WriteLine($"Es gibt keinen EVENT namens {nameof(ev3)}");
+
 			Person participator1 = new Person("Part1", "Franz");
 			Person participator2 = new Person("Part2", "Hans");
 			Person participator3 = new Person("Part3", "Adi");
@@ -44,21 +50,13 @@ namespace MainProgramm
 
 			dictionary.Add(ev2, people1);
 
-			foreach (var item in dictionary[ev1])
-			{
-				Console.WriteLine($"Liste ev1 - {item} ");
-			}
-			foreach (var item in dictionary[ev2])
-			{
-				Console.WriteLine($"Liste ev2 - {item} ");
-			}
 			List<Event> eventListe = new List<Event>();
 			List<Person> personal = new List<Person>();
 			eventListe = dictionary.Keys.ToList();
 			//personal = dictionary.Values.ToList();
 			foreach (var item in eventListe)
 			{
-				for (int i = 0; i < dictionary[item].ToArray().Length; i++)
+				for (int i = 0; i < dictionary[item].ToList().Count; i++)
 				{
 					Console.WriteLine($"{item.Title} / {item.MyDateTime} : {dictionary[item].ToArray()[i]}");
 				}
@@ -68,11 +66,13 @@ namespace MainProgramm
 			{
 				Console.WriteLine($"{item.Title} / {item.MyDateTime}");
 			}
+			Console.WriteLine("-----------------UMGEKEHRT----------------------------------");
+
 			foreach (var item in eventListe)
 			{
 				for (int i = dictionary[item].ToArray().Length - 1; i >= 0; i--)
 				{
-					Console.WriteLine($"{item.Title} / {item.MyDateTime} : {dictionary[item].ToArray()[i]}");
+					Console.WriteLine($"{item.Title} / {item.MyDateTime} : {dictionary[item].ToList()[i]}");
 				}
 			}
 			//var items = from pair in dictionary orderby pair.Value ascending select pair;

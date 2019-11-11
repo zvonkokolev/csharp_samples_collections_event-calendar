@@ -10,7 +10,6 @@ namespace EventCalendar.Logic
 	{
 		//fields
 		private bool _isLimitedEvent;
-		private static int _countEventsForPerson;
 		private readonly List<Event> _events = new List<Event>();
 		private readonly List<Person> _participators = new List<Person>();
 		private readonly Dictionary<Event, List<Person>> _participatorsOnEvent
@@ -38,7 +37,6 @@ namespace EventCalendar.Logic
 
 		public Controller()
 		{
-			_countEventsForPerson = 0;
 		}
 		/// <summary>
 		/// Ein Event mit dem angegebenen Titel und dem Termin wird für den Einlader angelegt.
@@ -191,12 +189,11 @@ namespace EventCalendar.Logic
 			}
 			people = _participatorsOnEvent[ev].ToList();
 			bool change;
-			do
+			do   // sort alghoritmus
 			{
 				change = false;
 				for (int i = 0; i < people.Count - 1; i++)
-				{
-					//if (!(people[i].EventCounter is IComparable left) || !(people[i + 1].EventCounter is IComparable right))
+				{	// first - count of events
 					if (!( CountEventsForPerson(people[i]) is IComparable left) || !(CountEventsForPerson(people[i + 1]) is IComparable right))
 					{
 						throw new Exception("Objekte sind nicht IMyCompareable");
@@ -208,9 +205,9 @@ namespace EventCalendar.Logic
 						people[i] = tmp;
 						change = true;
 					}
-					else
-					{
-						if (!(people[i].FirstName is IComparable leftName) || !(people[i + 1].FirstName is IComparable rightName))
+					if (left.CompareTo(right) == 0)
+					{	// then for lastname
+						if (!(people[i].LastName is IComparable leftName) || !(people[i + 1].LastName is IComparable rightName))
 						{
 							throw new Exception("Objekte sind nicht IMyCompareable");
 						}
@@ -221,10 +218,23 @@ namespace EventCalendar.Logic
 							people[i] = tmp;
 							change = true;
 						}
+						if (leftName.CompareTo(rightName) == 0)
+						{	// at last for a firsname
+							if (!(people[i].FirstName is IComparable leftFirstName) || !(people[i + 1].FirstName is IComparable rightFirstName))
+							{
+								throw new Exception("Objekte sind nicht IMyCompareable");
+							}
+							if (leftFirstName.CompareTo(rightFirstName) > 0)
+							{
+								var tmp = people[i + 1];
+								people[i + 1] = people[i];
+								people[i] = tmp;
+								change = true;
+							}
+						}
 					}
 				}
 			} while (change == true);
-
 			//var items = from pair in _participatorsOnEvent orderby pair.Value ascending select pair;
 			//people.Sort();
 			//MySort.Sort(people);
@@ -241,7 +251,7 @@ namespace EventCalendar.Logic
 			if (person == null)
 			{
 				return null;
-			}
+			}	// iterate keys (events) 
 			foreach (KeyValuePair<Event, List<Person>> titel in _participatorsOnEvent)
 			{
 				if (titel.Value.Contains(person))
@@ -263,19 +273,20 @@ namespace EventCalendar.Logic
 		/// <returns>Anzahl oder 0 im Fehlerfall</returns>
 		public int CountEventsForPerson(Person participator)
 		{
+			int _countEventsForPerson = 0;
 			if (participator == null)
 			{
 				return 0;
-			}
+			}	// iterate dictionary keys
 			foreach (KeyValuePair<Event, List<Person>> titel in _participatorsOnEvent)
-			{
+			{	//	iterate participator lists and 
 				for (int i = 0; i < titel.Value.ToList().Count; i++)
-				{
+				{  // search for person
 					if (titel.Value.ToList()[i].FirstName.Equals(participator.FirstName))
 					{
 						_countEventsForPerson++;
 					}
-				}
+				}  // and return counts of participator
 			}
 			return _countEventsForPerson;
 		}
@@ -283,7 +294,6 @@ namespace EventCalendar.Logic
 		{
 			throw new NotImplementedException();
 		}
-
 		public IEnumerator GetEnumerator()
 		{
 			throw new NotImplementedException();

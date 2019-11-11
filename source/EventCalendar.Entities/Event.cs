@@ -35,7 +35,9 @@ namespace EventCalendar.Entities
 				throw new NullReferenceException("Person, Title oder Datum stimmen nicht");
 			}
 		}
-
+		public Event()
+		{
+		}
 		//method
 		public string Title { get => _title; set => _title = value; }
 		public DateTime MyDateTime { get => _dateTime; set => _dateTime = value; }
