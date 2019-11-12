@@ -8,26 +8,8 @@ namespace EventCalendar.Entities
 	/// Person kann sowohl zu einer Veranstaltung einladen,
 	/// als auch an Veranstaltungen teilnehmen
 	/// </summary>
-	public class Person : IComparable
+	public class Person : IComparable<Person>
 	{
-		public class SortFirstNameHelper : IComparer
-		{
-			public int Compare(object x, object y)
-			{
-				Person leftPerson = (Person)x;
-				Person rightPerson = (Person)y;
-				return String.Compare(leftPerson.FirstName, rightPerson.FirstName);
-			}
-		}
-		public class SortLastNameHelper : IComparer
-		{
-			public int Compare(object x, object y)
-			{
-				Person leftPerson = (Person)x;
-				Person rightPerson = (Person)y;
-				return String.Compare(rightPerson.FirstName, leftPerson.FirstName);
-			}
-		}
 		private readonly bool _isInvitor = false;
 		public string LastName { get; }
 		public string FirstName { get; }
@@ -40,7 +22,7 @@ namespace EventCalendar.Entities
 		}
 		public Person(string lastName, string firstName)
 		{
-			if(lastName == null || firstName == null)
+			if (lastName == null || firstName == null)
 			{
 				throw new NullReferenceException("Name ist nicht gueltig");
 			}
@@ -49,7 +31,7 @@ namespace EventCalendar.Entities
 		}
 		public Person(string lastNameX, string firstNameX, string email = "0", string phoneNumber = "0")
 		{
-			if(lastNameX == null || firstNameX == null)
+			if (lastNameX == null || firstNameX == null)
 			{
 				throw new NullReferenceException("Personalien sind nicht vollstaendig");
 			}
@@ -57,7 +39,7 @@ namespace EventCalendar.Entities
 			FirstName = firstNameX;
 			MailAddress = email;
 			PhoneNumber = phoneNumber;
-			if(MailAddress == "0" || PhoneNumber == "0")
+			if (MailAddress == "0" || PhoneNumber == "0")
 			{
 				_isInvitor = true;
 			}
@@ -72,27 +54,28 @@ namespace EventCalendar.Entities
 		{
 			return $"{LastName} {FirstName} {MailAddress} {PhoneNumber}";
 		}
-		public static IComparer SortFirstName(List<Person> people)
+		public int CompareTo(Person other)
 		{
-			if (people is null)
+			if (other == null || !(other is IComparable))
 			{
-				throw new ArgumentNullException(nameof(people));
+				throw new ArgumentNullException($"{nameof(other)} ist kein Person");
 			}
-			return (IComparer) new SortFirstNameHelper();
+			Person otherPeron = (Person)other;
+			return otherPeron.EventCounter.CompareTo(EventCounter);
 		}
-		public static IComparer SortLastName(Person people)
+		public class LastNameComparer : IComparer<Person>
 		{
-			if (people is null)
+			public int Compare(Person x, Person y)
 			{
-				throw new ArgumentNullException();
+				return x.LastName.CompareTo(y.LastName);
 			}
-
-			return (IComparer) new SortLastNameHelper();
 		}
-
-		public int CompareTo(object obj)
+		public class FirstNameComparer : IComparer<Person>
 		{
-			throw new NotImplementedException();
+			public int Compare(Person x, Person y)
+			{
+				return x.FirstName.CompareTo(y.FirstName);
+			}
 		}
 	}
 }

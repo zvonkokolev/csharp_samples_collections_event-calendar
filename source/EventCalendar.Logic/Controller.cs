@@ -187,57 +187,9 @@ namespace EventCalendar.Logic
 			{
 				return people;
 			}
-			people = _participatorsOnEvent[ev].ToList();
-			bool change;
-			do   // sort alghoritmus
-			{
-				change = false;
-				for (int i = 0; i < people.Count - 1; i++)
-				{	// first - count of events
-					if (!( CountEventsForPerson(people[i]) is IComparable left) || !(CountEventsForPerson(people[i + 1]) is IComparable right))
-					{
-						throw new Exception("Objekte sind nicht IMyCompareable");
-					}
-					if (left.CompareTo(right) > 0)
-					{
-						var tmp = people[i + 1];
-						people[i + 1] = people[i];
-						people[i] = tmp;
-						change = true;
-					}
-					if (left.CompareTo(right) == 0)
-					{	// then for lastname
-						if (!(people[i].LastName is IComparable leftName) || !(people[i + 1].LastName is IComparable rightName))
-						{
-							throw new Exception("Objekte sind nicht IMyCompareable");
-						}
-						if (leftName.CompareTo(rightName) > 0)
-						{
-							var tmp = people[i + 1];
-							people[i + 1] = people[i];
-							people[i] = tmp;
-							change = true;
-						}
-						if (leftName.CompareTo(rightName) == 0)
-						{	// at last for a firsname
-							if (!(people[i].FirstName is IComparable leftFirstName) || !(people[i + 1].FirstName is IComparable rightFirstName))
-							{
-								throw new Exception("Objekte sind nicht IMyCompareable");
-							}
-							if (leftFirstName.CompareTo(rightFirstName) > 0)
-							{
-								var tmp = people[i + 1];
-								people[i + 1] = people[i];
-								people[i] = tmp;
-								change = true;
-							}
-						}
-					}
-				}
-			} while (change == true);
+			people = _participatorsOnEvent[ev].ToList<Person>();
+			MySort.Sort<Person>(people);
 			//var items = from pair in _participatorsOnEvent orderby pair.Value ascending select pair;
-			//people.Sort();
-			//MySort.Sort(people);
 			return people;
 		}
 		/// <summary>
